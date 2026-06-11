@@ -1,0 +1,29 @@
+name: Daily Data Generation
+
+on:
+  schedule:
+    - cron: '0 6 * * *'   # Runs daily at 6:00 AM UTC
+  workflow_dispatch:        # Allows manual trigger
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install supabase
+      
+      - name: Run data generator
+        run: python .github/scripts/generate_data.py
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
